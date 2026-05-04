@@ -1,0 +1,413 @@
+<div class="shopping-game">
+    <div class="game-layout">
+        <div class="shelf-area">
+            <div class="shelf-title">Product Shelf</div>
+
+            <div class="product-grid">
+                <div class="product-card" draggable="true" data-id="hydration-leave-in" data-correct="cart">
+                    <div class="product-name">Curl Hydration Leave-In</div>
+                    <div class="ingredient-list">
+                        Aloe vera, panthenol, jojoba oil, glycerin
+                    </div>
+                </div>
+
+                <div class="product-card" draggable="true" data-id="drying-spray" data-correct="shelf">
+                    <div class="product-name">Strong Hold Styling Spray</div>
+                    <div class="ingredient-list">
+                        Alcohol Denat, isopropyl alcohol, fragrance
+                    </div>
+                </div>
+
+                <div class="product-card" draggable="true" data-id="repair-mask" data-correct="cart">
+                    <div class="product-name">Repair Curl Mask</div>
+                    <div class="ingredient-list">
+                        Shea butter, argan oil, hydrolyzed protein, panthenol
+                    </div>
+                </div>
+
+                <div class="product-card" draggable="true" data-id="heavy-shine-cream" data-correct="shelf">
+                    <div class="product-name">Heavy Shine Cream</div>
+                    <div class="ingredient-list">
+                        Petrolatum, beeswax, dimethicone, mineral oil
+                    </div>
+                </div>
+
+                <div class="product-card" draggable="true" data-id="lightweight-gel" data-correct="cart">
+                    <div class="product-name">Lightweight Curl Gel</div>
+                    <div class="ingredient-list">
+                        Aloe vera, glycerin, panthenol, lightweight styling polymers
+                    </div>
+                </div>
+
+                <div class="product-card" draggable="true" data-id="stripping-shampoo" data-correct="shelf">
+                    <div class="product-name">Deep Strip Shampoo</div>
+                    <div class="ingredient-list">
+                        Sodium Lauryl Sulfate, Alcohol Denat, fragrance
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="cart-area" id="cartDropZone">
+            <div class="cart-title">Your Curl Cart</div>
+            <div class="cart-subtitle">Drag curl-friendly products here.</div>
+            <div class="cart-items" id="cartItems"></div>
+        </div>
+    </div>
+
+    <div class="button-row">
+        <button onclick="checkCart()">Check My Cart</button>
+        <button class="secondary-button" onclick="resetGame()">Reset</button>
+    </div>
+
+    <div id="feedbackBox" class="feedback-box"></div>
+</div>
+
+<style>
+    @font-face {
+        font-family: "ABeeZee";
+        src: url("ABeeZee-Regular.woff2") format("woff2");
+        font-weight: normal;
+        font-style: normal;
+    }
+
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+        background: transparent;
+    }
+
+    .shopping-game {
+        font-family: "ABeeZee", Arial, sans-serif;
+        color: #000000;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 24px;
+        box-sizing: border-box;
+        background: transparent;
+    }
+
+    .game-layout {
+        display: grid;
+        grid-template-columns: 1.4fr 1fr;
+        gap: 24px;
+        align-items: stretch;
+    }
+
+    .shelf-area,
+    .cart-area {
+        background-color: #ffffff;
+        border: 3px solid #8E75C7;
+        border-radius: 28px;
+        padding: 22px;
+        box-sizing: border-box;
+    }
+
+    .shelf-title,
+    .cart-title {
+        font-size: 24px;
+        color: #8E75C7;
+        margin-bottom: 14px;
+    }
+
+    .cart-subtitle {
+        font-size: 16px;
+        margin-bottom: 14px;
+        color: #000000;
+    }
+
+    .product-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+    }
+
+    .product-card {
+        background-color: #ffffff;
+        border: 2px solid #C8B6E2;
+        border-radius: 22px;
+        padding: 16px;
+        cursor: grab;
+        transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+        box-sizing: border-box;
+    }
+
+    .product-card:hover {
+        background-color: #F7F2FF;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+    }
+
+    .product-card:active {
+        cursor: grabbing;
+    }
+
+    .product-name {
+        font-size: 18px;
+        color: #8E75C7;
+        margin-bottom: 8px;
+    }
+
+    .ingredient-list {
+        font-size: 15px;
+        line-height: 1.45;
+        color: #000000;
+    }
+
+    .cart-area {
+        min-height: 420px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .cart-area.drag-over {
+        background-color: #F7F2FF;
+        border-color: #C8B6E2;
+    }
+
+    .cart-items {
+        flex: 1;
+        display: grid;
+        gap: 12px;
+        align-content: start;
+        min-height: 280px;
+        padding: 10px;
+        border-radius: 22px;
+        background-color: #F8F5FF;
+        box-shadow: inset 0 0 0 2px #C8B6E2;
+    }
+
+    .cart-items:empty::before {
+        content: "Your cart is empty.";
+        color: #777777;
+        font-size: 16px;
+        padding: 10px;
+    }
+
+    .cart-items .product-card {
+        background-color: #C8B6E2;
+        border-color: #8E75C7;
+    }
+
+    .cart-items .product-name {
+        color: #000000;
+    }
+
+    .button-row {
+        display: flex;
+        gap: 14px;
+        margin-top: 20px;
+        flex-wrap: wrap;
+    }
+
+    .button-row button {
+        font-family: "ABeeZee", Arial, sans-serif;
+        font-size: 18px;
+        color: #ffffff;
+        background-color: #8E75C7;
+        border: none;
+        border-radius: 999px;
+        padding: 13px 24px;
+        cursor: pointer;
+        transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .button-row button:hover {
+        background-color: #C8B6E2;
+        color: #000000;
+        transform: translateY(-2px);
+    }
+
+    .button-row .secondary-button {
+        background-color: #C8B6E2;
+        color: #000000;
+    }
+
+    .button-row .secondary-button:hover {
+        background-color: #8E75C7;
+        color: #ffffff;
+    }
+
+    .feedback-box {
+        display: none;
+        margin-top: 20px;
+        background-color: #ffffff;
+        border: 3px solid #8E75C7;
+        border-radius: 28px;
+        padding: 22px;
+        font-size: 17px;
+        line-height: 1.55;
+    }
+
+    .feedback-box strong {
+        color: #8E75C7;
+    }
+
+    .feedback-box ul {
+        margin: 12px 0 0 0;
+        padding-left: 22px;
+    }
+
+    .correct {
+        box-shadow: 0 0 0 3px #8E75C7;
+    }
+
+    .incorrect {
+        box-shadow: 0 0 0 3px #000000;
+    }
+
+    @media (max-width: 800px) {
+        .game-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .product-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .cart-area {
+            min-height: 320px;
+        }
+    }
+</style>
+
+<script>
+    const cartDropZone = document.getElementById("cartDropZone");
+    const cartItems = document.getElementById("cartItems");
+    const feedbackBox = document.getElementById("feedbackBox");
+    const shelfGrid = document.querySelector(".product-grid");
+
+    let draggedItem = null;
+
+    document.querySelectorAll(".product-card").forEach((card) => {
+        card.addEventListener("dragstart", function () {
+            draggedItem = this;
+            setTimeout(() => {
+                this.style.opacity = "0.4";
+            }, 0);
+        });
+
+        card.addEventListener("dragend", function () {
+            this.style.opacity = "1";
+            draggedItem = null;
+        });
+    });
+
+    cartDropZone.addEventListener("dragover", function (event) {
+        event.preventDefault();
+        cartDropZone.classList.add("drag-over");
+    });
+
+    cartDropZone.addEventListener("dragleave", function () {
+        cartDropZone.classList.remove("drag-over");
+    });
+
+    cartDropZone.addEventListener("drop", function (event) {
+        event.preventDefault();
+        cartDropZone.classList.remove("drag-over");
+
+        if (draggedItem) {
+            cartItems.appendChild(draggedItem);
+            clearFeedbackStyles();
+        }
+    });
+
+    shelfGrid.addEventListener("dragover", function (event) {
+        event.preventDefault();
+    });
+
+    shelfGrid.addEventListener("drop", function (event) {
+        event.preventDefault();
+
+        if (draggedItem) {
+            shelfGrid.appendChild(draggedItem);
+            clearFeedbackStyles();
+        }
+    });
+
+    function checkCart() {
+        const allProducts = document.querySelectorAll(".product-card");
+        const cartProducts = cartItems.querySelectorAll(".product-card");
+
+        let correctCount = 0;
+        let totalCorrect = 0;
+        let feedbackItems = [];
+
+        allProducts.forEach((product) => {
+            product.classList.remove("correct", "incorrect");
+
+            if (product.dataset.correct === "cart") {
+                totalCorrect++;
+            }
+        });
+
+        cartProducts.forEach((product) => {
+            if (product.dataset.correct === "cart") {
+                correctCount++;
+                product.classList.add("correct");
+            } else {
+                product.classList.add("incorrect");
+            }
+        });
+
+        const incorrectCartItems = Array.from(cartProducts).filter(
+            (product) => product.dataset.correct === "shelf"
+        );
+
+        const missingGoodItems = Array.from(allProducts).filter(
+            (product) =>
+                product.dataset.correct === "cart" &&
+                !cartItems.contains(product)
+        );
+
+        if (incorrectCartItems.length === 0 && missingGoodItems.length === 0) {
+            feedbackBox.innerHTML = `
+        <strong>Great job!</strong><br>
+        You built a curl-friendly cart. You selected products with ingredients that can support moisture, softness, definition, and strength.
+      `;
+        } else {
+            incorrectCartItems.forEach((product) => {
+                feedbackItems.push(
+                    `<li><strong>${product.querySelector(".product-name").textContent}</strong> may be better left on the shelf because it includes ingredients that can cause dryness, buildup, or heaviness for some curls.</li>`
+                );
+            });
+
+            missingGoodItems.forEach((product) => {
+                feedbackItems.push(
+                    `<li><strong>${product.querySelector(".product-name").textContent}</strong> could be added to your cart because it includes ingredients that can support curly hair.</li>`
+                );
+            });
+
+            feedbackBox.innerHTML = `
+        <strong>Your cart score: ${correctCount} / ${totalCorrect}</strong>
+        <ul>
+          ${feedbackItems.join("")}
+        </ul>
+      `;
+        }
+
+        feedbackBox.style.display = "block";
+    }
+
+    function resetGame() {
+        const allProducts = document.querySelectorAll(".product-card");
+
+        allProducts.forEach((product) => {
+            product.classList.remove("correct", "incorrect");
+            shelfGrid.appendChild(product);
+        });
+
+        feedbackBox.style.display = "none";
+        feedbackBox.innerHTML = "";
+    }
+
+    function clearFeedbackStyles() {
+        document.querySelectorAll(".product-card").forEach((product) => {
+            product.classList.remove("correct", "incorrect");
+        });
+
+        feedbackBox.style.display = "none";
+        feedbackBox.innerHTML = "";
+    }
+</script>
